@@ -1,26 +1,35 @@
 #include "robot_gui/robot_gui.h"
 #include "ros/init.h"
-//robotinfo_msgs::RobotInfo10Fields
 
+// Constructor
 CVUIROSPublisher::CVUIROSPublisher() {
-    // Initialize ROS node
     ros::NodeHandle nh;
     vel_pub_ = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 1);
     info_sub_ = nh.subscribe("/robot_info", 1, &CVUIROSPublisher::infoCallback, this);
     info_msg_.data_field_01 = "No data received in /robot_info.";
+    odom_sub_ = nh.subscribe("/odom", 1, &CVUIROSPublisher::odomCallback, this);
 }
 
+// Robot info message callback
 void CVUIROSPublisher::infoCallback(const robotinfo_msgs::RobotInfo10FieldsConstPtr &msg) {
-    ROS_DEBUG("Data message was updated");
+    ROS_DEBUG("Info message was updated");
     info_msg_ = *msg;
+}
 
+// Odometry message callback
+void CVUIROSPublisher::odomCallback(const nav_msgs::OdometryConstPtr &msg) {
+    ROS_DEBUG("Odom message was updated");
+    pos_x_ = msg->pose.pose.position.x;
+    pos_y_ = msg->pose.pose.position.y;
+    pos_z_ = msg->pose.pose.position.z;
 }
 
 void CVUIROSPublisher::run() {
+    ROS_INFO("Starting GUI");
     cv::Mat frame = cv::Mat(400, 680, CV_8UC3);
     int count = 0;
 
-    // Init a OpenCV window and tell cvui to use it
+    // Init a OpenCV window and tell CVUI to use it
     cv::namedWindow(WINDOW_NAME);
     cvui::init(WINDOW_NAME);
 
@@ -82,19 +91,21 @@ void CVUIROSPublisher::run() {
         // Windows for velocities monitoring
         cvui::window(frame, 250, 280, 125, 110, "Linear Velocity");
         if (vel_msg_.linear.x >= 0) {
-            cvui::printf(frame, 288.5, 320, 0.9, 0xFFB900, "%.2f", vel_msg_.linear.x);
+            cvui::printf(frame, 265, 320, 0.9, 0xFFB900, "+%.2f", vel_msg_.linear.x);
         }
         else {
             cvui::printf(frame, 265, 320, 0.9, 0x00F0FF, "%.2f", vel_msg_.linear.x);
         }
+        cvui::text(frame, 284, 360, "(m/s)", 0.6, 0xCBCBCB);
         
         cvui::window(frame, 385, 280, 125, 110, "Angular Velocity");
         if (vel_msg_.angular.z >= 0) {
-            cvui::printf(frame, 423.5, 320, 0.9, 0xFFB900, "%.2f", vel_msg_.angular.z);
+            cvui::printf(frame, 400, 320, 0.9, 0xFFB900, "+%.2f", vel_msg_.angular.z);
         }
         else {
             cvui::printf(frame, 400, 320, 0.9, 0x00F0FF, "%.2f", vel_msg_.angular.z);
         }
+        cvui::text(frame, 412, 360, "(rad/s)", 0.6, 0xCBCBCB);
 
         // Window for distance monitoring
         cvui::window(frame, 520, 10, 150, 80, "Traveled Distance");
@@ -107,8 +118,13 @@ void CVUIROSPublisher::run() {
 
         // Windows for coordinates
         cvui::window(frame, 520, 220, 150, 50, "Coordinate: X");
+        cvui::printf(frame, 525, 245, 0.6, 0xFF0000, pos_x_ >= 0 ? "+%.3f m" : "%.3f m", pos_x_);
+
         cvui::window(frame, 520, 280, 150, 50, "Coordinate: Y");
+        cvui::printf(frame, 525, 305, 0.6, 0x00FF00, pos_y_ >= 0 ? "+%.3f m" : "%.3f m", pos_y_);
+
         cvui::window(frame, 520, 340, 150, 50, "Coordinate: Z");
+        cvui::printf(frame, 525, 365, 0.6, 0x0000FF, pos_z_ >= 0 ? "+%.3f m" : "%.3f m", pos_z_);
 
         // Update CVUI internal state
         cvui::update();
@@ -123,6 +139,7 @@ void CVUIROSPublisher::run() {
 
         // Publish velocities
         vel_pub_.publish(vel_msg_);
+
         // Update callbacks
         ros::spinOnce();
     }

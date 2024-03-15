@@ -5,6 +5,7 @@
 #include "robot_gui/cvui.h"
 #include <std_msgs/String.h>
 #include <geometry_msgs/Twist.h>
+#include <nav_msgs/Odometry.h>
 #include "robotinfo_msgs/RobotInfo10Fields.h"
 
 
@@ -15,9 +16,14 @@ class CVUIROSPublisher {
 
     private:
         void infoCallback(const robotinfo_msgs::RobotInfo10FieldsConstPtr &msg);
+        void odomCallback(const nav_msgs::OdometryConstPtr &msg);
         ros::Publisher vel_pub_;
         geometry_msgs::Twist vel_msg_;
         ros::Subscriber info_sub_;
         robotinfo_msgs::RobotInfo10Fields info_msg_;
+        ros::Subscriber odom_sub_;
+        float pos_x_;
+        float pos_y_;
+        float pos_z_;
         const std::string WINDOW_NAME = "Robot Control GUI";
 };
