@@ -20,7 +20,7 @@ void CVUIROSPublisher::run() {
     cv::Mat frame = cv::Mat(400, 680, CV_8UC3);
     int count = 0;
 
-    // Init a OpenCV window and tell cvui to use it.
+    // Init a OpenCV window and tell cvui to use it
     cv::namedWindow(WINDOW_NAME);
     cvui::init(WINDOW_NAME);
 
@@ -68,20 +68,33 @@ void CVUIROSPublisher::run() {
 
         // Window for robot_info messages
         cvui::window(frame, 10, 10, 230, 380, "Robot Information");
-        cvui::printf(frame, 15, 35, 0.4, 0xFFB900, "%s", info_msg_.data_field_01.c_str());
-        cvui::printf(frame, 15, 55, 0.4, 0xFFB900, "%s", info_msg_.data_field_02.c_str());
-        cvui::printf(frame, 15, 75, 0.4, 0xFFB900, "%s", info_msg_.data_field_03.c_str());
-        cvui::printf(frame, 15, 95, 0.4, 0xFFB900, "%s", info_msg_.data_field_04.c_str());
-        cvui::printf(frame, 15, 115, 0.4, 0xFFB900, "%s", info_msg_.data_field_05.c_str());
-        cvui::printf(frame, 15, 135, 0.4, 0xFFB900, "%s", info_msg_.data_field_06.c_str());
-        cvui::printf(frame, 15, 155, 0.4, 0xFFB900, "%s", info_msg_.data_field_07.c_str());
-        cvui::printf(frame, 15, 175, 0.4, 0xFFB900, "%s", info_msg_.data_field_08.c_str());
-        cvui::printf(frame, 15, 195, 0.4, 0xFFB900, "%s", info_msg_.data_field_09.c_str());
-        cvui::printf(frame, 15, 215, 0.4, 0xFFB900, "%s", info_msg_.data_field_10.c_str());
+        cvui::printf(frame, 15, 35, 0.4, 0xCBCBCB, "%s", info_msg_.data_field_01.c_str());
+        cvui::printf(frame, 15, 55, 0.4, 0xCBCBCB, "%s", info_msg_.data_field_02.c_str());
+        cvui::printf(frame, 15, 75, 0.4, 0xCBCBCB, "%s", info_msg_.data_field_03.c_str());
+        cvui::printf(frame, 15, 95, 0.4, 0xCBCBCB, "%s", info_msg_.data_field_04.c_str());
+        cvui::printf(frame, 15, 115, 0.4, 0xCBCBCB, "%s", info_msg_.data_field_05.c_str());
+        cvui::printf(frame, 15, 135, 0.4, 0xCBCBCB, "%s", info_msg_.data_field_06.c_str());
+        cvui::printf(frame, 15, 155, 0.4, 0xCBCBCB, "%s", info_msg_.data_field_07.c_str());
+        cvui::printf(frame, 15, 175, 0.4, 0xCBCBCB, "%s", info_msg_.data_field_08.c_str());
+        cvui::printf(frame, 15, 195, 0.4, 0xCBCBCB, "%s", info_msg_.data_field_09.c_str());
+        cvui::printf(frame, 15, 215, 0.4, 0xCBCBCB, "%s", info_msg_.data_field_10.c_str());
 
         // Windows for velocities monitoring
         cvui::window(frame, 250, 280, 125, 110, "Linear Velocity");
+        if (vel_msg_.linear.x >= 0) {
+            cvui::printf(frame, 288.5, 320, 0.9, 0xFFB900, "%.2f", vel_msg_.linear.x);
+        }
+        else {
+            cvui::printf(frame, 265, 320, 0.9, 0x00F0FF, "%.2f", vel_msg_.linear.x);
+        }
+        
         cvui::window(frame, 385, 280, 125, 110, "Angular Velocity");
+        if (vel_msg_.angular.z >= 0) {
+            cvui::printf(frame, 423.5, 320, 0.9, 0xFFB900, "%.2f", vel_msg_.angular.z);
+        }
+        else {
+            cvui::printf(frame, 400, 320, 0.9, 0x00F0FF, "%.2f", vel_msg_.angular.z);
+        }
 
         // Window for distance monitoring
         cvui::window(frame, 520, 10, 150, 80, "Traveled Distance");
