@@ -5,13 +5,13 @@
 CVUIROSPublisher::CVUIROSPublisher() {
     // Initialize ROS node
     ros::NodeHandle nh;
-    pub_ = nh.advertise<std_msgs::String>("cvui_button_clicks", 10);
+    vel_pub_ = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 1);
     info_sub_ = nh.subscribe("/robot_info", 1, &CVUIROSPublisher::infoCallback, this);
     info_msg_.data_field_01 = "No data received in /robot_info.";
 }
 
 void CVUIROSPublisher::infoCallback(const robotinfo_msgs::RobotInfo10FieldsConstPtr &msg) {
-    ROS_INFO("Data message was updated");
+    ROS_DEBUG("Data message was updated");
     info_msg_ = *msg;
 
 }
@@ -30,28 +30,40 @@ void CVUIROSPublisher::run() {
 
         // Robot control buttons
         if (cvui::button(frame, 250, 10, 80, 80, "LF")) {
-        // The button was clicked, so let's increment our counter and publish a
-        // message.
-        count++;
-        std_msgs::String msg;
-        msg.data = "Button clicked " + std::to_string(count) + " times.";
-        pub_.publish(msg);
+            vel_msg_.linear.x = 0.5;
+            vel_msg_.angular.z = 0.5;
         }
         if (cvui::button(frame, 340, 10, 80, 80, "F")) {
+            vel_msg_.linear.x = 0.5;
+            vel_msg_.angular.z = 0.0;
         }
         if (cvui::button(frame, 430, 10, 80, 80, "RF")) {
+            vel_msg_.linear.x = 0.5;
+            vel_msg_.angular.z = -0.5;
         }
         if (cvui::button(frame, 250, 100, 80, 80, "L")) {
+            vel_msg_.linear.x = 0.0;
+            vel_msg_.angular.z = 0.5;
         }
         if (cvui::button(frame, 340, 100, 80, 80, "S")) {
+            vel_msg_.linear.x = 0.0;
+            vel_msg_.angular.z = 0.0;
         }
         if (cvui::button(frame, 430, 100, 80, 80, "R")) {
+            vel_msg_.linear.x = 0.0;
+            vel_msg_.angular.z = -0.5;
         }
         if (cvui::button(frame, 250, 190, 80, 80, "LB")) {
+            vel_msg_.linear.x = -0.5;
+            vel_msg_.angular.z = 0.5;
         }
         if (cvui::button(frame, 340, 190, 80, 80, "B")) {
+            vel_msg_.linear.x = -0.5;
+            vel_msg_.angular.z = 0.0;
         }
         if (cvui::button(frame, 430, 190, 80, 80, "RB")) {
+            vel_msg_.linear.x = -0.5;
+            vel_msg_.angular.z = -0.5;
         }
 
         // Window for robot_info messages
@@ -96,6 +108,8 @@ void CVUIROSPublisher::run() {
         break;
         }
 
+        // Publish velocities
+        vel_pub_.publish(vel_msg_);
         // Update callbacks
         ros::spinOnce();
     }
