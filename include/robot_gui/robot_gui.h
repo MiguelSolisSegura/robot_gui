@@ -7,6 +7,7 @@
 #include <geometry_msgs/Twist.h>
 #include <nav_msgs/Odometry.h>
 #include "robotinfo_msgs/RobotInfo10Fields.h"
+#include "std_srvs/Trigger.h"
 
 
 class CVUIROSPublisher {
@@ -15,15 +16,26 @@ class CVUIROSPublisher {
         void run();
 
     private:
+        // Callbacks
         void infoCallback(const robotinfo_msgs::RobotInfo10FieldsConstPtr &msg);
         void odomCallback(const nav_msgs::OdometryConstPtr &msg);
+        // Clients
+        ros::ServiceClient get_client_;
+        ros::ServiceClient reset_client_;
+        std_srvs::Trigger srv_;
+        // Publishers
         ros::Publisher vel_pub_;
-        geometry_msgs::Twist vel_msg_;
+        // Subscribers
         ros::Subscriber info_sub_;
-        robotinfo_msgs::RobotInfo10Fields info_msg_;
         ros::Subscriber odom_sub_;
+        // Messages
+        geometry_msgs::Twist vel_msg_;
+        robotinfo_msgs::RobotInfo10Fields info_msg_;
+        std::string distance_msg_;
+        // Positions
         float pos_x_;
         float pos_y_;
         float pos_z_;
+        // GUI variables
         const std::string WINDOW_NAME = "Robot Control GUI";
 };

@@ -1,5 +1,6 @@
 #include "robot_gui/robot_gui.h"
 #include "ros/init.h"
+#include <string>
 
 // Constructor
 CVUIROSPublisher::CVUIROSPublisher() {
@@ -8,6 +9,12 @@ CVUIROSPublisher::CVUIROSPublisher() {
     info_sub_ = nh.subscribe("/robot_info", 1, &CVUIROSPublisher::infoCallback, this);
     info_msg_.data_field_01 = "No data received in /robot_info.";
     odom_sub_ = nh.subscribe("/odom", 1, &CVUIROSPublisher::odomCallback, this);
+    pos_x_ = 0.0;
+    pos_y_ = 0.0;
+    pos_z_ = 0.0;
+    get_client_ = nh.serviceClient<std_srvs::Trigger>("/get_distance");
+    reset_client_ = nh.serviceClient<std_srvs::Trigger>("/reset_distance");
+    distance_msg_ = "0.00";
 }
 
 // Robot info message callback
@@ -112,9 +119,23 @@ void CVUIROSPublisher::run() {
 
         // Buttons for distance interaction
         if (cvui::button(frame, 520, 100, 150, 50, "Update Distance")) {
+            if (get_client_.call(srv_)) {
+                distance_msg_ = srv_.response.message;
+            }
+            else {
+                ROS_ERROR("Failed to call service GET distance_tracker_service");
+            }
         }
+        cvui::printf(frame, 530, 50, 0.8, 0xCBCBCB, "%s m", distance_msg_.c_str());
         if (cvui::button(frame, 520, 160, 150, 50, "Reset Distance")) {
+            if (reset_client_.call(srv_)) {
+                distance_msg_ = srv_.response.message;
+            }
+            else {
+                ROS_ERROR("Failed to call service RESET distance_tracker_service");
+            }
         }
+        
 
         // Windows for coordinates
         cvui::window(frame, 520, 220, 150, 50, "Coordinate: X");
