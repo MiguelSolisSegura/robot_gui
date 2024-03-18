@@ -46,40 +46,36 @@ void CVUIROSPublisher::run() {
 
         // Robot control buttons
         if (cvui::button(frame, 250, 10, 80, 80, "LF")) {
-            vel_msg_.linear.x = 0.5;
-            vel_msg_.angular.z = 0.5;
+            vel_msg_.linear.x += 0.1;
+            vel_msg_.angular.z += 0.1;
         }
         if (cvui::button(frame, 340, 10, 80, 80, "F")) {
-            vel_msg_.linear.x = 0.5;
-            vel_msg_.angular.z = 0.0;
+            vel_msg_.linear.x += 0.1;
         }
         if (cvui::button(frame, 430, 10, 80, 80, "RF")) {
-            vel_msg_.linear.x = 0.5;
-            vel_msg_.angular.z = -0.5;
+            vel_msg_.linear.x += 0.1;
+            vel_msg_.angular.z += -0.1;
         }
         if (cvui::button(frame, 250, 100, 80, 80, "L")) {
-            vel_msg_.linear.x = 0.0;
-            vel_msg_.angular.z = 0.5;
+            vel_msg_.angular.z += 0.1;
         }
         if (cvui::button(frame, 340, 100, 80, 80, "S")) {
             vel_msg_.linear.x = 0.0;
             vel_msg_.angular.z = 0.0;
         }
         if (cvui::button(frame, 430, 100, 80, 80, "R")) {
-            vel_msg_.linear.x = 0.0;
-            vel_msg_.angular.z = -0.5;
+            vel_msg_.angular.z += -0.1;
         }
         if (cvui::button(frame, 250, 190, 80, 80, "LB")) {
-            vel_msg_.linear.x = -0.5;
-            vel_msg_.angular.z = 0.5;
+            vel_msg_.linear.x += -0.1;
+            vel_msg_.angular.z += 0.1;
         }
         if (cvui::button(frame, 340, 190, 80, 80, "B")) {
-            vel_msg_.linear.x = -0.5;
-            vel_msg_.angular.z = 0.0;
+            vel_msg_.linear.x += -0.1;
         }
         if (cvui::button(frame, 430, 190, 80, 80, "RB")) {
-            vel_msg_.linear.x = -0.5;
-            vel_msg_.angular.z = -0.5;
+            vel_msg_.linear.x += -0.1;
+            vel_msg_.angular.z += -0.1;
         }
 
         // Window for robot_info messages
